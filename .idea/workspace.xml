@@ -2,23 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b6cc2a5a-7f6e-4927-a8e5-b9baaf2048e7" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/thinkinary-docs.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/.nojekyll" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/_sidebar.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/articles/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/articles/_sidebar.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/favicon.ico" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/importing-images/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/importing-images/_sidebar.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/users/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/users/_sidebar.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/articles/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/articles/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,6 +36,7 @@
       <option name="presentableId" value="Default" />
       <updated>1603541940751</updated>
       <workItem from="1603541942787" duration="427000" />
+      <workItem from="1603610306637" duration="714000" />
     </task>
     <servers />
   </component>

@@ -33,7 +33,7 @@ class Article {
 The process of adding articles varies for different platforms.
 On mobile the user starts by specifying the article title and on the 
 web the user is faced directly with an editor. However the case, when a user 
-initializes the article (be it by specifying the article title, article body or the cover image), a draft is first created. The draft shall be saved the firebase realtime database
+initializes the article (be it by specifying the article title, article body or the cover image) a draft is first created. The draft shall be saved the firebase realtime database
 in the order:
 
 ```typescript
@@ -258,12 +258,12 @@ this.db.addArticle(article)
    });
 ```
 
-When an article was added to articles collection succesfully.\
+When an article was added to articles collection successfully.\
 send a request to the `https://thinkinary-proxy-jade.now.sh/api/articles/?type=add` endpoint
 to add the article to algolia's search index.\
 You can use the http package in flutter to achieve this.
 ```dart
-Future<http.Response> createAlbum(String title) {
+Future<http.Response> addArticleToAlgolia() {
   return http.post(
     'https://thinkinary-proxy-jade.now.sh/api/articles/?type=add',
     headers: <String, String>{
