@@ -32,8 +32,8 @@ class Article {
 
 The process of adding articles varies for different platforms.
 On mobile the user starts by specifying the article title and on the 
-web, the user if faced with a editor directly. However the case, when a user 
-initializes his article (be it by specifying the article title, article body or the cover image), a draft is first created. The draft shall be saved the firebase realtime database
+web the user is faced directly with an editor. However the case, when a user 
+initializes the article (be it by specifying the article title, article body or the cover image), a draft is first created. The draft shall be saved the firebase realtime database
 in the order:
 
 ```typescript
@@ -53,7 +53,9 @@ in the order:
 Each time the user updates the body of the article, it's a good practice to wait for the user to finish typing before
 saving the article to draft. The draft exist till the article is published or submitted for review.
 
-Create an instance to the article object, this is what you'll submit to the backend. example
+Create an `Article` instance and initialize some properties. 
+You can decide to pass the initialization of as constructor props.
+ This is what we'll submit to the database. example
 ```typescript
 const article = new Article();
 // Specifying the author
@@ -115,7 +117,7 @@ Once the image is uploaded, the article object is patched with the response from
 * `response.url` : This is the url of the uploaded image.
 
 ###### Generating thumbnails
-You should patch the form by generate thumbnails of named transformations.
+Create a function to generate thumbnails of named transformations.
 Thumbnails are used to by the frontend applications on several occasion, for example the small thumbnails are used in list views,
 the large thumbnails for the article read view.
 
@@ -139,17 +141,17 @@ String generateNamedTransformation(String url, String type) {
 ```
 
 ##### Editor images
-Sometimes the user might want to add images through the article editor, normally most editors encode the 
+Sometimes the user might want to add images through the article editor. most editors encode the 
 image to a base64 string, this behaviour is definitely not favorable. so We need to override the default
-behaviour, upload the image to the image cdn and return an image url to the editor.
+behaviour and upload the image to the image CDN and return an image url to the editor.
 
 
 ### Saving articles
 Once the user is done typing and clicks on complete, Now he is presented a screen to add tags or skip to publish.
 
 #### Adding Tags
-If tags are added by the user, add item to the article payload. Here is a code snippet in typescript
-Do to do the same implementation in targeted language.
+If tags are added by the user, add the tags to the article object. Here is a code snippet in typescript
+Do to do the same implementation in any targeted language.
 
 ```typescript
 addTag(tag: string) {
@@ -174,9 +176,9 @@ determine weather to publish the article directly or submit it for review.
 Check the firebase user claims docs for your platform.
 
 #### Generating the URL ID
-The url id is the a hyphened-split title fo the article, passed as a param in the article's url which is used to fetch
+The url ID is a hyphenated article's title, passed as a parameter in the article's url which is used to fetch
  the article from the database. for example `https://thinkinary.com/article/how-to-cope-with-cyberbullying`. \
- `how-to-cope-with-cyberbullying` is the url id. This is used instead of the database primary for 
+ The url ID is the parameter `how-to-cope-with-cyberbullying`. This is used instead of the database primary for 
  readability.
  
  In typescript
@@ -221,15 +223,15 @@ Now let's review article payload
 }
 ```
 
-However it's important to check if the coverImageURL exist. 
-If it doesn't exist, you should assign the default article image placeholder
+However it's important to check if the coverImageURL exist (ie. it was explicitly imported by the user). 
+If it doesn't exist, you should assign thinkinary's default article image placeholder
 ```typescript
 if (!article.coverImageURL) {
   article.coverImageURL = "https://ik.imagekit.io/thinkinary/placeholder_s5F47pbrD3I.png";
 }
 ```
 
-Now depending on the user custom claims, if the user has the custom claim of `Admin` or `Editor`. \
+Now depending on the user custom claims: if the user has the custom claim of `Admin` or `Editor`. \
 Add the article to the `articles` collection.
 
 ```typescript
