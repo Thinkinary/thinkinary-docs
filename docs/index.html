@@ -17,6 +17,10 @@
       name: 'Thinkinary Docs v1.0',
       repo: 'https://github.com/Thinkinary/thinkinary-blog-react',
       loadSidebar: true,
+      subMaxLevel: 5,
+      alias: {
+        '/.*/_sidebar.md': '/_sidebar.md',
+      },
       pagination: {
         previousText: 'Previous',
         nextText: 'Next',
@@ -38,5 +42,6 @@
   <script src="https://myCDN.com/prism@v1.x/plugins/autoloader/prism-autoloader.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-typescript.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-dart.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script>
 </body>
 </html>

@@ -5,7 +5,7 @@ Thinkinary principally has two methods of importing images:
 
 It's best to create an image provider class to handle uploading of images. see [Image provider](/importing-images/?id=image-provider)
 
-### Importing form device
+### Importing from device
 On the web you can import images by using an input field of typ file 
 ```html
   <input type="file" accept="images/*" onchange="importImage()" />
@@ -20,10 +20,12 @@ chooseImage() {
 }
 ```
 
-### Importing form Unsplash
-You can create a provider class to handle getting photos from unsplash
+### Importing from Unsplash
+You can create a provider class to handle getting photos from unsplash. 
+[Unsplash API](https://unsplash.com/documentation) specification permits us to get random photos and 
+search photos by key words. See the implementation below:
 
-#### Typescript class
+##### Typescript class
 
 ```typescript
 class UnsplashProvider {
@@ -31,7 +33,9 @@ class UnsplashProvider {
   private accessKey = ACCESS_KEY;
 
   constructor() { }
-
+  /**
+   * Get random photos from unsplash
+  */
   getRandom(count = 9): Promise<UnSplashPhoto[]> {
     return fetch(`${this.apiUrl}/photos/random?client_id=${this.accessKey}&count=${count}&orientation=landscape`, {
       method: 'GET',
@@ -52,15 +56,18 @@ class UnsplashProvider {
     }).then(response => response.json());
   }
 }
+
 ```
 
-#### Dart class
+##### Dart class
 
 ```typescript
 class UnsplashProvider {
   private apiUrl = 'https://api.unsplash.com';
   private accessKey = ACCESS_KEY;
-
+  /**
+   * Get random photos from unsplash
+  */
   Future<UnSplashPhoto[]> getRandom(int count = 9) {
     return http.get("${this.apiUrl}/photos/random?client_id=${this.accessKey}&count=${count}&orientation=landscape", {
       headers: { 'Accept-Version': 'v1'}
@@ -79,10 +86,89 @@ class UnsplashProvider {
 }
 ```
 
-`getRandom()` method returns an array of [UnSplashPhoto interface](/importing-images/?id=unsplashphoto) and the `searchPhotos()` 
-method returns the [UnSplashSearchResults](/importing-images/?id=unsplashsearchresults) interface
+`getRandom()` method returns an array of the [UnSplashPhoto](/importing-images/?id=unsplashphoto) interface and the `searchPhotos()` 
+method returns the [UnSplashSearchResults](/importing-images/?id=unsplashsearchresults) interface.
 
-### Image Provider
+#### Uploading to Firebase
+When a user selects an unsplash photo, we have to upload this photo to 
+firebase cloud storage.First we will use a cloud function endpoint to upload this image to firebase, so in the front end 
+application we have to send an http(POST) request with the unsplash photo url as the body of the request 
+to the cloud function endpoint.This endpoint will return the new url as response. 
+we have to format this image url so we can access via Imagekit enpoint. 
+See [Accessing images through imagekit url endpoint](/importing-images/?id=accessing-images-through-imagekitio-url-endpoint).
+
+The cloud function (Node.js)
+```javascript
+  const fetch = require("node-fetch");
+  const functions = require("firebase-functions");
+  var remoteimageurl = "https://example.com/images/photo.jpg";
+  
+  module.exports = functions.onRequest((request, response) => {
+      const {fileName} = request.body;
+      const imagePath = `images/${fileName}`;
+      fetch(remoteimageurl).then(res => {
+          return res.blob();
+        }).then(blob => {
+            //uploading blob to firebase storage
+          firebase.storage().ref(imagePath).put(blob).then(function(snapshot) {
+            return snapshot.ref.getDownloadURL()
+          }).then(url => {
+           response.json({url}) 
+          }) 
+        }).catch(error => {
+          response.status(500).json({error});
+        });
+});
+```
+
+### Image Provider 
+This section describes Thinkinary's standard of storing and processing images. By default we'll use firebase
+to store image. The older method was to upload images directly to imageKit. In the two
+cases, [Imakgekit](https://imagekit.io) is used to process the images.
+
+#### Firebase storage
+This is default method of saving and processing images. All thinkinary's images will be stored in 
+firebase. First the imported image is uploaded to firebase storage. All image uploads must be uploaded in
+the images directory.
+
+Example in typescript
+```typescript
+const fileName = "example.png";
+      const imagePath = `images/${fileName}`;
+ const uploadTask = firebase.storage().ref(imagePath).put(blob);
+```
+
+In dart
+```dart
+ var fileName = "example.png";
+ var imagePath = "images/${fileName}";
+ StorageReference storageReference = FirebaseStorage.instance    
+       .ref(imagePath);   
+ StorageUploadTask uploadTask = storageReference.putFile(_image);
+```
+##### Accessing images through ImageKit.io URL-endpoint
+After the upload is complete, we have to change the download url so we can access through imagekit's url endpoint .The portion of the download url with 
+`https://firebasestorage.googleapis.com` is replaced with ` https://ik.imagekit.io/thinkinary`
+
+ Example in typescript
+```typescript
+ uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+    return downloadURL.toString().replace("https://firebasestorage.googleapis.com","https://ik.imagekit.io/thinkinary");
+  });
+```
+
+Similarly in dart
+```dart
+ storageReference.getDownloadURL().then((fileURL) {    
+      setState(() {    
+        _uploadedFileURL = fileURLdownloadURL.toString().replaceAll("https://firebasestorage.googleapis.com","https://ik.imagekit.io/thinkinary");    
+      });
+ });
+```
+
+
+
+#### ImageKit Storage (Deprecated)
 This is class that handles uploading to imagekit CDN. The image cdn in structured with 3 directories
 and some files in the root directory;
 
@@ -108,7 +194,7 @@ enum ImageKitFolders {
 ```
 The end point used to upload images is `https://upload.imagekit.io/api/v1/files/upload`
 
-#### Authentication
+##### Authentication
 Before files can be uploaded, Our Image CDN requires us to have a signature, so we need to get a signature
 before each upload
 
@@ -131,7 +217,7 @@ Future<string> getSignature() {
 
 
 
-#### The Upload function
+##### The Upload function
 The upload function takes three paramaters, 
 * `file` the image blob or base64 object
 * `fileName` the filename of the image, can be custom filename
@@ -182,7 +268,7 @@ Future<ImageKitResponse> upload(File file, String fileName, ImageKitFolders fold
 
 The upload function returns and object of type [ImageKitResponse](/importing-images/?id=imagekitresponse)
 
-#### Typescript Class
+##### Typescript Class
 ```typescript
 class ImageProvider {
   url = "https://upload.imagekit.io/api/v1/files/upload";
@@ -221,7 +307,7 @@ class ImageProvider {
 
 ```
 
-#### Dart Class
+##### Dart Class
 
 ```dart
 class ImageProvider {
@@ -247,7 +333,7 @@ class ImageProvider {
 }
 ```
 
-#### ImageKit interfaces
+##### ImageKit interfaces
 
 ##### ImagekitAuth
 ```typescript
@@ -277,7 +363,7 @@ interface ImageKitResponse {
 }
 ```
 
-#### Unsplash Interfaces
+### Unsplash Interfaces
 
 ##### UnSplashPhoto
 
