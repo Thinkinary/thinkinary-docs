@@ -414,3 +414,34 @@ export interface UnSplashSearchResults {
   total_pages: number;
 }
 ```
+
+## Generating transformation urls
+Imagekit url structure
+
+```
+
+        URL-endpoint              transformation      image path                                    
+┌───────────────────────────────┐┌──────────────┐┌───────────────┐
+https://ik.imagekit.io/thinkinary/tr:w-300,h-300/example-image.jpg
+
+// With get paramenters
+        URL-endpoint                  image path      transformation                                   
+┌────────────────────────────────┐┌────────────────┐┌─────────────┐
+https://ik.imagekit.io/thinkinary/example-image.jpg?tr=w-300,h-300
+
+```
+Now we'll write a custom function to generate a transformation url.
+
+Typescript
+```typescript
+ export function generateTransformationURL(url: string, {width, height}) {
+  return `${url}?tr=w-${width},h-${height}`; 
+}
+```
+
+In dart
+```dart
+ String generateTransformationURL(String url, int width, int height) {
+   return "${url}?tr=w-${width},h-${height}"; 
+ }
+```
