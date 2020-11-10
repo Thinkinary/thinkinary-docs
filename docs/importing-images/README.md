@@ -25,8 +25,7 @@ You can create a provider class to handle getting photos from unsplash.
 [Unsplash API](https://unsplash.com/documentation) specification permits us to get random photos and 
 search photos by key words. See the implementation below:
 
-##### Typescript class
-
+Typescript class example
 ```typescript
 class UnsplashProvider {
   private apiUrl = 'https://api.unsplash.com';
@@ -59,9 +58,8 @@ class UnsplashProvider {
 
 ```
 
-##### Dart class
-
-```typescript
+Dart class example
+```dart
 class UnsplashProvider {
   private apiUrl = 'https://api.unsplash.com';
   private accessKey = ACCESS_KEY;
