@@ -102,22 +102,45 @@ The cloud function (Node.js)
   var remoteimageurl = "https://example.com/images/photo.jpg";
   
   module.exports = functions.onRequest((request, response) => {
-      const {fileName} = request.body;
-      const imagePath = `images/${fileName}`;
-      fetch(remoteimageurl).then(res => {
-          return res.blob();
-        }).then(blob => {
-            //uploading blob to firebase storage
-          firebase.storage().ref(imagePath).put(blob).then(function(snapshot) {
+      const {path, url, fileName} = request.body;
+      const _fileName = fileName ? fileName.trim().split(' ').join('-') : url.substring(url.lastIndexOf('/') + 1);
+      const filePath = `images/${path}/${_fileName}`;
+      fetch(url).then(res => {
+        return res.blob();
+      }).then(blob => {
+         //uploading blob to firebase storage
+         firebase.storage().ref(filePath).put(blob).then(function(snapshot) {
             return snapshot.ref.getDownloadURL()
-          }).then(url => {
-           response.json({url}) 
-          }) 
+          }).then(downloadUrl => {
+            const newUrl = downloadUrl.toString().replace("https://firebasestorage.googleapis.com","https://ik.imagekit.io/thinkinary");;
+            response.json({url: newUrl})
+          });
         }).catch(error => {
           response.status(500).json({error});
         });
 });
 ```
+
+##### The request
+A sample request dart
+```dart
+ http.post(
+      'https://us-central1-thinkabox-4dc7b.cloudfunctions.net/api/unsplash/upload',
+      body: jsonEncode(<String, String>{
+        "url": "https://images.unsplash.com/photo-1593642532009-6ba71e22f468",   // the unsplash photo url
+        "path": "articles_images"
+        "fileName": "article-title"   // File name of the image, preferable the article's title name
+      }),
+    ).then((response) => {
+      const data = jsonDecode(response);
+      print(data.url) // new image url: https://ik.imagekit.io/thinkinary/article-title
+   })
+```
+
+##### The request parameters
+* `url` (Required) The image url as gotten from unsplash's api.
+* `path` (Required) The path of image. see [Image Paths](/importing-images/?id=image-path) (eg. article_images).
+* `fileName` (Optional) specify a default filename. If not set, the filename will be gotten from url. It is recommended to set the filename same as the article's title.
 
 ### Image Provider 
 This section describes Thinkinary's standard of storing and processing images. By default we'll use firebase
@@ -183,8 +206,10 @@ and some files in the root directory;
 
 Depending on the context, image uploads shall be in one of the folders; book_cover, articles_images and profile_images.
 We can create an enumarator for these paths.
+
+##### Image path
 ```typescript
-enum ImageKitFolders {
+enum ImagePath {
   BOOK_COVERS = "/book_covers/",
   ARTICLE_IMAGES = "/article_images/",
   PROFILE_IMAGES = "/profile_images/"
